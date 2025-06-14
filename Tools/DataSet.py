@@ -98,11 +98,11 @@ class YoloDataset(data.Dataset):
         [10:30]   → 20 维的 one-hot 类别信息
         """
         cell_size = 1. / grid_num # 每个 cell 的宽度/高度（归一化后）
-        wh = boxes[:, 2:] - boxes[:, :2]  # 计算标注框wh
+        wh = boxes[:, 2:] - boxes[:, :2]  # 计算标注框wh，[:, 2:]为每一行的右下角坐标，[:, :2]为每一行的坐上角坐标，减 1 是为了将 ceil 后的坐标转换为 0-based 的索引
         cxcy = (boxes[:, 2:] + boxes[:, :2]) / 2  # 标注框中心坐标
         for i in range(cxcy.size()[0]):
             cxcy_sample = cxcy[i]
-            ij = (cxcy_sample / cell_size).ceil() - 1  # 得到该中心点在哪个 cell 里
+            ij = (cxcy_sample / cell_size).ceil() - 1  # 得到该中心点在哪个 cell 里，【.ceil()】为向上取整
             
             target[int(ij[1]), int(ij[0]), 4] = 1   # 第一个 bbox 的 confidence = 1，注：这个是bbox的置信度
             target[int(ij[1]), int(ij[0]), 9] = 1   # 第二个 bbox 的 confidence = 1，注：这个是bbox的置信度
